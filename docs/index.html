@@ -1,0 +1,608 @@
+<title>Calendly vs. Formester — Feature Gap Report</title>
+<style>
+  :root{
+    --ink:#1c1f2a;
+    --paper:#f2f3f6;
+    --surface:#ffffff;
+    --line:#dde0e8;
+    --line-strong:#c7cbd6;
+    --muted:#666c7d;
+    --accent:#5b3ee8;
+    --accent-soft:#efeafd;
+    --calendly:#0060ff;
+    --calendly-soft:#e8f0ff;
+    --good:#1e7a4c;
+    --good-soft:#e5f4ec;
+    --warn:#96650a;
+    --warn-soft:#fbf0dc;
+    --bad:#b23a3a;
+    --bad-soft:#fbe9e9;
+    --nv:#6b7180;
+    --nv-soft:#eef0f3;
+    --serif: Iowan Old Style, Charter, "Source Serif 4", Georgia, ui-serif, serif;
+    --sans: ui-sans-serif, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+  ::selection{ background:var(--accent-soft); }
+
+  h1,h2,h3{
+    font-family:var(--serif);
+    font-weight:600;
+    text-wrap:balance;
+    color:var(--ink);
+    margin:0;
+  }
+
+  .shell{
+    max-width:1180px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:220px minmax(0,1fr);
+    gap:48px;
+    padding:56px 32px 96px;
+  }
+  @media (max-width:920px){
+    .shell{ grid-template-columns:1fr; }
+    .toc{ display:none; }
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    grid-column:1 / -1;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    padding-bottom:36px;
+    margin-bottom:8px;
+    border-bottom:1px solid var(--line-strong);
+  }
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:0.78rem;
+    font-weight:600;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  .masthead h1{
+    font-size:clamp(2rem, 3.4vw, 2.7rem);
+    line-height:1.12;
+    max-width:22ch;
+  }
+  .masthead p.dek{
+    font-size:1.05rem;
+    color:var(--muted);
+    max-width:62ch;
+    margin:0;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    font-size:0.85rem;
+    color:var(--muted);
+  }
+  .meta-row .pill{
+    border:1px solid var(--line-strong);
+    background:var(--surface);
+    padding:5px 12px;
+    border-radius:100px;
+  }
+
+  /* ---------- TOC ---------- */
+  .toc{
+    position:sticky;
+    top:40px;
+    align-self:start;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    font-size:0.86rem;
+  }
+  .toc-label{
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .toc a{
+    color:var(--ink);
+    text-decoration:none;
+    padding:7px 0 7px 12px;
+    border-left:2px solid var(--line);
+  }
+  .toc a:hover{ color:var(--accent); border-left-color:var(--accent); }
+
+  main{ min-width:0; display:flex; flex-direction:column; gap:64px; }
+  section{ scroll-margin-top:32px; }
+  section > h2{
+    font-size:1.5rem;
+    margin-bottom:6px;
+  }
+  .section-intro{
+    color:var(--muted);
+    max-width:70ch;
+    margin:8px 0 26px;
+  }
+  .section-num{
+    font-family:var(--sans);
+    font-size:0.78rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    color:var(--accent);
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:8px;
+  }
+
+  /* ---------- scorecard ---------- */
+  .scorecard{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  @media (max-width:640px){ .scorecard{ grid-template-columns:repeat(2,1fr); } }
+  .stat{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-top:3px solid var(--stat-color, var(--ink));
+    padding:18px 18px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .stat .n{
+    font-family:var(--serif);
+    font-size:2.1rem;
+    font-variant-numeric:tabular-nums;
+    line-height:1;
+  }
+  .stat .l{
+    font-size:0.82rem;
+    color:var(--muted);
+  }
+  .stat.good{ --stat-color:var(--good); }
+  .stat.warn{ --stat-color:var(--warn); }
+  .stat.bad{ --stat-color:var(--bad); }
+  .stat.nv{ --stat-color:var(--nv); }
+
+  /* ---------- pills for status ---------- */
+  .status{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.78rem;
+    font-weight:600;
+    padding:3px 10px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .status.good{ background:var(--good-soft); color:var(--good); }
+  .status.warn{ background:var(--warn-soft); color:var(--warn); }
+  .status.bad{ background:var(--bad-soft); color:var(--bad); }
+  .status.nv{ background:var(--nv-soft); color:var(--nv); }
+  .status::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  /* ---------- feature tables ---------- */
+  .cat-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+  }
+  .cat-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 20px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(var(--paper), var(--surface));
+  }
+  .cat-head h3{ font-size:1.05rem; }
+  .cat-head .count{ font-size:0.78rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  .table-wrap{ overflow-x:auto; }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.92rem;
+  }
+  thead th{
+    text-align:left;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding:10px 20px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:12px 20px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:var(--paper); }
+  td.feature{ font-weight:500; max-width:30ch; }
+  td.tiers{ color:var(--muted); font-size:0.86rem; white-space:nowrap; }
+  td.note{ color:var(--muted); font-size:0.86rem; max-width:34ch; }
+
+  .tier-chip{
+    display:inline-block;
+    font-size:0.72rem;
+    font-weight:600;
+    padding:1px 6px;
+    border-radius:4px;
+    background:var(--calendly-soft);
+    color:var(--calendly);
+    margin-right:3px;
+  }
+
+  /* ---------- narrative blocks ---------- */
+  .prose{ max-width:72ch; }
+  .prose p{ margin:0 0 14px; }
+  .prose ul{ margin:0 0 14px; padding-left:22px; }
+  .prose li{ margin-bottom:6px; }
+  .callout{
+    border-left:3px solid var(--accent);
+    background:var(--accent-soft);
+    padding:14px 18px;
+    font-size:0.94rem;
+    max-width:72ch;
+  }
+  .callout strong{ display:block; margin-bottom:4px; font-family:var(--serif); font-size:1rem; }
+
+  .gap-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:16px;
+  }
+  .gap-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:18px 20px;
+  }
+  .gap-card h4{
+    font-family:var(--serif);
+    font-size:1rem;
+    margin:0 0 10px;
+  }
+  .gap-card ul{ margin:0; padding-left:18px; font-size:0.9rem; color:var(--ink); }
+  .gap-card li{ margin-bottom:6px; }
+  .gap-card li.win{ color:var(--good); }
+
+  ol.sources{
+    padding-left:20px;
+    font-size:0.9rem;
+    color:var(--muted);
+  }
+  ol.sources li{ margin-bottom:8px; }
+  ol.sources code{
+    font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size:0.82rem;
+    background:var(--paper);
+    padding:1px 5px;
+    border-radius:3px;
+    color:var(--ink);
+  }
+
+  footer{
+    grid-column:1 / -1;
+    border-top:1px solid var(--line-strong);
+    padding-top:20px;
+    font-size:0.8rem;
+    color:var(--muted);
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .stat, .cat-card, .gap-card{ transition:border-color .15s ease; }
+  }
+</style>
+
+<div class="shell">
+
+  <div class="masthead">
+    <span class="eyebrow">Competitive feature audit — internal</span>
+    <h1>What Calendly has that Formester doesn't (yet)</h1>
+    <p class="dek">A feature-by-feature comparison built from Calendly's own billing page, its public feature pages, and a live audit of Formester's plan-gating code and production database — with an honest read on where we already match, partially match, or haven't checked.</p>
+    <div class="meta-row">
+      <span class="pill">Prepared 2 Jul 2026</span>
+      <span class="pill">For: Manager review</span>
+      <span class="pill">Sources: Calendly.com (scraped + web) · Formester codebase · prod DB via <code>rails runner</code></span>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <a href="#scorecard">Scorecard</a>
+    <a href="#core">Core features</a>
+    <a href="#customizations">Customizations</a>
+    <a href="#team">Team tools</a>
+    <a href="#integrations">Integrations</a>
+    <a href="#security">Security &amp; control</a>
+    <a href="#support">Support</a>
+    <a href="#beyond">Beyond the billing page</a>
+    <a href="#gaps">Gap summary</a>
+    <a href="#practices">Best practices</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <main>
+
+    <section id="scorecard">
+      <span class="section-num">Scorecard</span>
+      <h2>67 Calendly features checked against Formester</h2>
+      <p class="section-intro">Every row in Calendly's plan comparison, plus features from its public marketing pages, scored against what Formester's code and plan data actually enforce today.</p>
+      <div class="scorecard">
+        <div class="stat good"><span class="n">15</span><span class="l">Supported today</span></div>
+        <div class="stat warn"><span class="n">12</span><span class="l">Partially supported</span></div>
+        <div class="stat bad"><span class="n">31</span><span class="l">Not supported</span></div>
+        <div class="stat nv"><span class="n">9</span><span class="l">Not verified in this audit</span></div>
+      </div>
+    </section>
+
+    <section id="core">
+      <span class="section-num">01 — Calendly plan comparison</span>
+      <h2>Core features</h2>
+      <p class="section-intro">Scheduling mechanics: event types, notifications, routing. This is Calendly's home turf — and Formester's thinnest coverage, since booking is a single gated add-on rather than a system of event types.</p>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Core features</h3><span class="count">14 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Calendly tiers</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">Meeting polls</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status warn">Partial</span></td><td class="note">Choice questions + summary-page counts/graphs exist; no live count shown inline on the open form.</td></tr>
+              <tr><td class="feature">One-on-one events</td><td class="tiers"><span class="tier-chip">Free (1)</span><span class="tier-chip">Std+</span></td><td><span class="status warn">Partial</span></td><td class="note">No native event-type object, but one form per meeting type (each with its own link) works as a manual substitute — no centralized management, counts against form limit.</td></tr>
+              <tr><td class="feature">Group event types</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note">Native scheduler's <code>appointmentType: group</code> + <code>slotCapacity</code> allows N attendees per slot, with a shared calendar event — real multi-seat booking, not a rate limit.</td></tr>
+              <tr><td class="feature">Collective event types</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Round robin event types</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Email notifications — bookings/cancellations</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status warn">Partial</span></td><td class="note">Submission notifications exist; no booking/cancellation object to notify on.</td></tr>
+              <tr><td class="feature">Email notifications — reminders/follow-ups</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status warn">Partial</span></td><td class="note">Autoresponder workflows cover forms, not meetings.</td></tr>
+              <tr><td class="feature">Customizable notification workflows</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status warn">Partial</span></td><td class="note">Narrower than Calendly's per-notification-type customization.</td></tr>
+              <tr><td class="feature">Contact profiles &amp; scheduling activity</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status bad">Not supported</span></td><td class="note">No CRM/contacts entity in the schema.</td></tr>
+              <tr><td class="feature">Share availability from Contact profiles</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status bad">Not supported</span></td><td class="note">Depends on Contacts, which doesn't exist.</td></tr>
+              <tr><td class="feature">Redirect from confirmation page</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note">Standard post-submission redirect/link feature.</td></tr>
+              <tr><td class="feature">Forms that route by answer</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status good">Supported</span></td><td class="note">Conditional logic / rules, gated to Business plan.</td></tr>
+              <tr><td class="feature">Route via 3rd-party forms (Marketo, HubSpot, Pardot)</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status warn">Partial</span></td><td class="note">HubSpot integration exists; no Marketo or Pardot connector.</td></tr>
+              <tr><td class="feature">Route via Salesforce account-owner lookup</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status bad">Not supported</span></td><td class="note">No Salesforce integration found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="customizations">
+      <span class="section-num">02 — Calendly plan comparison</span>
+      <h2>Customizations</h2>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Customizations</h3><span class="count">4 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Calendly tiers</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">Custom branding on booking page</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status good">Supported</span></td><td class="note">Equivalent for forms, not a booking page specifically.</td></tr>
+              <tr><td class="feature">Remove platform branding</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note"><code>white_label</code> flag, Business plan.</td></tr>
+              <tr><td class="feature">Custom cancellation policy message</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status bad">Not supported</span></td><td class="note">No booking/cancellation object exists.</td></tr>
+              <tr><td class="feature">Custom embed colors</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note">Custom CSS / slug / styling on Business plan.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="team">
+      <span class="section-num">03 — Calendly plan comparison</span>
+      <h2>Team tools</h2>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Team tools</h3><span class="count">4 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Calendly tiers</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">Analytics &amp; insights dashboard</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status bad">Not supported</span></td><td class="note">No analytics fields in plans/subscriptions schema.</td></tr>
+              <tr><td class="feature">Enforce branding org-wide</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status bad">Not supported</span></td><td class="note">Branding is per-form, not org-enforced.</td></tr>
+              <tr><td class="feature">Groups + delegated group admins</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status bad">Not supported</span></td><td class="note"><code>member_limit</code> exists; no group/sub-admin structure.</td></tr>
+              <tr><td class="feature">Org-wide locked "managed" templates</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status bad">Not supported</span></td><td class="note">No admin-locked template distribution mechanism found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="integrations">
+      <span class="section-num">04 — Calendly plan comparison</span>
+      <h2>Integrations</h2>
+      <p class="section-intro">Some rows favor Formester — Monday.com, ADF, and Databricks connectors don't appear on Calendly's own page at all.</p>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Integrations</h3><span class="count">7 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Calendly tiers</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">Zoom / Google Meet / MS Teams</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status bad">Not supported</span></td><td class="note">No video-conferencing integration; not a meetings product.</td></tr>
+              <tr><td class="feature">Connect multiple calendars</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status bad">Not supported</span></td><td class="note">No calendar sync layer found.</td></tr>
+              <tr><td class="feature">Custom webhooks (real-time)</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note">Per-plan <code>webhook_limit</code>, higher ceilings than Calendly discloses.</td></tr>
+              <tr><td class="feature">Stripe / PayPal payments</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note">Both providers supported for form payments.</td></tr>
+              <tr><td class="feature">HubSpot, Mailchimp, Zapier</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status warn">Partial</span></td><td class="note">HubSpot confirmed; Mailchimp/Zapier not found in plan-gating code.</td></tr>
+              <tr><td class="feature">Google Analytics / Meta Pixel</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status good">Supported</span></td><td class="note">Covered by the "scripts" (GTM/GA/Pixel) feature flag.</td></tr>
+              <tr><td class="feature">Salesforce, Marketo</td><td class="tiers"><span class="tier-chip">Teams+</span></td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature"><em>Monday.com, ADF, Databricks connectors</em></td><td class="tiers">— not offered —</td><td><span class="status good">Supported</span></td><td class="note">Formester-only strength; absent from Calendly entirely.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="security">
+      <span class="section-num">05 — Calendly plan comparison</span>
+      <h2>Security &amp; control</h2>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Security &amp; control</h3><span class="count">6 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Calendly tiers</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">Data deletion for compliance</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status nv">Not verified</span></td><td class="note">Outside the plan-gating layer this audit covered.</td></tr>
+              <tr><td class="feature">Data deletion API</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status nv">Not verified</span></td><td class="note"></td></tr>
+              <tr><td class="feature">SAML single sign-on</td><td class="tiers"><span class="tier-chip">Teams (add-on)</span><span class="tier-chip">Ent</span></td><td><span class="status bad">Not supported</span></td><td class="note">No SSO code path found anywhere — not just ungated.</td></tr>
+              <tr><td class="feature">SCIM identity automation</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Domain control &amp; account oversight</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Automated group provisioning</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status bad">Not supported</span></td><td class="note">Depends on the group structure Formester doesn't have.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="support">
+      <span class="section-num">06 — Calendly plan comparison</span>
+      <h2>Support</h2>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Support</h3><span class="count">4 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Calendly tiers</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">Email support</td><td class="tiers"><span class="tier-chip">Free+</span></td><td><span class="status nv">Not verified</span></td><td class="note">Likely exists but wasn't part of the plan-schema audit.</td></tr>
+              <tr><td class="feature">Live chat support</td><td class="tiers"><span class="tier-chip">Std+</span></td><td><span class="status nv">Not verified</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Phone support</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status nv">Not verified</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Dedicated account partner</td><td class="tiers"><span class="tier-chip">Ent</span></td><td><span class="status nv">Not verified</span></td><td class="note">No plan-tiered support model found in schema either way.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="beyond">
+      <span class="section-num">07 — Beyond the billing page</span>
+      <h2>Features from Calendly's marketing site</h2>
+      <p class="section-intro">Not on the in-app comparison table, but live on calendly.com and its help center.</p>
+      <div class="cat-card">
+        <div class="cat-head"><h3>Additional capabilities</h3><span class="count">8 rows</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Source</th><th>Formester</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="feature">AI Notetaker (records/transcribes/summarizes calls)</td><td class="tiers">calendly.com/notetaker</td><td><span class="status bad">Not supported</span></td><td class="note">No meeting-recording surface exists to attach this to.</td></tr>
+              <tr><td class="feature">Broader "AI Assistant" for meeting prep/follow-up</td><td class="tiers">help/ai-at-calendly</td><td><span class="status warn">Partial</span></td><td class="note">Formester has AI form generation/rules/translation — same technology, different domain.</td></tr>
+              <tr><td class="feature">Mobile app (iOS/Android)</td><td class="tiers">calendly.com/features</td><td><span class="status bad">Not supported</span></td><td class="note">No mobile app referenced anywhere in the codebase.</td></tr>
+              <tr><td class="feature">Browser extensions (Chrome/Edge/Firefox/Safari) + Outlook add-in</td><td class="tiers">calendly.com/features</td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Native calendar sync (Google/Outlook/Exchange) + buffers</td><td class="tiers">calendly.com/features</td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">SMS reminders to invitees</td><td class="tiers">calendly.com/features</td><td><span class="status warn">Partial</span></td><td class="note">Formester's SMS credits are for phone verification, not reminders.</td></tr>
+              <tr><td class="feature">Contacts / lightweight CRM</td><td class="tiers">calendly.com/features</td><td><span class="status bad">Not supported</span></td><td class="note"></td></tr>
+              <tr><td class="feature">Website embed widgets</td><td class="tiers">calendly.com/features</td><td><span class="status good">Supported</span></td><td class="note"><code>formester-popup</code> and <code>formester-sidebar</code> web components.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="gaps">
+      <span class="section-num">08 — Synthesis</span>
+      <h2>Where the real gap is — and isn't</h2>
+      <p class="section-intro">Formester is a form builder with one gated scheduling add-on; Calendly is a dedicated scheduling product with a forms-adjacent layer bolted on. The gap is structural, concentrated in three places, with a couple of areas where Formester is actually ahead.</p>
+      <div class="gap-grid">
+        <div class="gap-card">
+          <h4>Scheduling depth</h4>
+          <ul>
+            <li>No native event-type object (1:1 is a manual one-form-per-meeting-type workaround); group bookings are natively supported (multi-seat slots), but collective/round-robin have no equivalent</li>
+            <li>No native calendar sync or double-booking prevention</li>
+            <li>No managed/locked meeting templates; meeting polls are partial (counts exist, no live inline tally)</li>
+          </ul>
+        </div>
+        <div class="gap-card">
+          <h4>Team &amp; admin tooling</h4>
+          <ul>
+            <li>No analytics dashboard in the plan/subscription schema</li>
+            <li>No group structure or delegated admins</li>
+            <li>SSO/SCIM absent outright, not merely ungated</li>
+          </ul>
+        </div>
+        <div class="gap-card">
+          <h4>Reach &amp; channel</h4>
+          <ul>
+            <li>No mobile app or browser extensions</li>
+            <li>No Contacts/CRM layer</li>
+            <li>Routing stops at HubSpot — no Salesforce or Marketo</li>
+          </ul>
+        </div>
+        <div class="gap-card">
+          <h4>Where Formester already wins</h4>
+          <ul>
+            <li class="win">Monday.com, ADF, and Databricks integrations — absent from Calendly entirely</li>
+            <li class="win">Higher disclosed webhook ceilings per plan</li>
+            <li class="win">Embed widgets on par with Calendly's</li>
+            <li class="win">Native group booking (N-seat slots, shared calendar event) — on par with Calendly's group event type</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="practices">
+      <span class="section-num">09 — Recommendations</span>
+      <h2>Plan &amp; pricing best practices worth adopting</h2>
+      <div class="prose">
+        <div class="callout">
+          <strong>Fix this regardless of Calendly</strong>
+          A prod rake task (<code>plans:raise_limits</code>) set form and submission limits to the same near-unlimited number on every paid tier, while the pricing page copy still advertises differentiated caps ("1k/mo" vs "15k/mo"). That mismatch is a trust risk independent of any competitor comparison.
+        </div>
+      </div>
+      <div class="prose" style="margin-top:20px">
+        <ul>
+          <li><strong>Consolidate tiers.</strong> Three tiers is the sweet spot for B2B SaaS decision-making; Formester currently carries 13 plan rows in production, most of them legacy or one-off (LTD, non-profit, developer).</li>
+          <li><strong>Lean into hybrid pricing.</strong> ~43% of SaaS companies already blend tiered and usage-based pricing, trending toward 61% by end of 2026, and it correlates with the highest median growth. Formester's per-org <code>custom_form_limit</code>/<code>custom_submission_limit</code> overrides are a ready foundation for usage-based upsells.</li>
+          <li><strong>Gate by persona, not just price.</strong> Calendly separates "power-user" features (Standard+) from "team-admin" features (Teams+). Formester's flat per-feature boolean columns could be organized the same way when designing a future Team tier.</li>
+          <li><strong>Version the feature flags.</strong> Plan features are unversioned DB columns edited by ad hoc rake tasks with no audit trail — unlike <code>Subscription</code>, which already uses <code>paper_trail</code>. Treating entitlements as versioned config would let support and pricing experiments answer "what did Business include on date X."</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sources">
+      <span class="section-num">10 — Reference</span>
+      <h2>Sources</h2>
+      <ol class="sources">
+        <li>Calendly billing/comparison page (org-specific, requires login) — <code>calendly.com/app/admin/billing</code></li>
+        <li>Calendly features page — <code>calendly.com/features</code></li>
+        <li>Calendly Notetaker — <code>calendly.com/notetaker</code></li>
+        <li>Calendly AI overview — <code>calendly.com/help/ai-at-calendly</code></li>
+        <li>Calendly AI Assistant overview — <code>calendly.com/help/ai-assistant-overview</code></li>
+        <li>Calendly Managed Events overview — <code>calendly.com/help/managed-events-overview</code></li>
+        <li>SaaS Pricing Page Best Practices 2026 — influenceflow.io</li>
+        <li>SaaS Pricing Models — Complete 2026 Guide — pricingio.com</li>
+        <li>SaaS Pricing Models: 7 Strategies — moesif.com</li>
+        <li>Guide to SaaS Pricing Models — maxio.com</li>
+        <li>SaaS Pricing Models 2026 Guide — revenera.com</li>
+        <li>SaaS Pricing Strategy Guide — dodopayments.com</li>
+        <li>SaaS Pricing Strategy Guide (usage-based) — momentumnexus.com</li>
+        <li>SaaS Feature Flags Implementation Guide 2026 — designrevision.com</li>
+        <li><strong>Internal:</strong> <code>app/models/plan.rb</code>, <code>app/models/subscription.rb</code>, <code>app/models/concerns/plan_feature_checker.rb</code>, <code>app/models/plan_addon.rb</code>, <code>app/models/subscription_addon.rb</code>, <code>app/models/subscription_validator.rb</code>, <code>db/schema.rb</code> (plans, plan_addons, subscriptions), <code>lib/tasks/plans.rake</code></li>
+        <li><strong>Internal:</strong> live query results from the <code>plans</code> and <code>subscriptions</code> tables — local Postgres, production dump, accessed 2 Jul 2026 via <code>bin/rails runner</code></li>
+      </ol>
+    </section>
+
+  </main>
+
+  <footer>
+    Full written report and source list also saved to <code>tmp/calendly_gap_analysis_report.md</code> and <code>tmp/calendly_gap_analysis_sources.md</code> in the formester-app repo. Status labels reflect the plan-gating layer of the codebase and production plan data only; rows marked "Not verified" fall outside that layer and weren't asserted either way.
+  </footer>
+
+</div>
